@@ -20,6 +20,7 @@
             <textarea id="t1" rows="10"></textarea>
         </div>
         <div>
+            <button id="btn0">清空</button>
             <button id="btn">翻译</button>
             <button id="btn2">复制结果</button>
         </div>
@@ -97,9 +98,7 @@
         t = "".concat(calls).concat(a.join('')).concat(calls).concat(halfwidthSymbol ? '.' : '。');
         return t;
     };
-    /**
-     * Add Animal Calls
-     */
+
     var addCalls = function (t, options) {
         t = addPunctuations(t, options);
         return t;
@@ -129,14 +128,15 @@
         t = Base64.decode(t);
         return t;
     };
-    /**
-     * 判断一个字符串是否是喵语言
-     */
+
     var isMiao = function (t) {
         if (!t)
             return false;
         return clean(t).length > 0;
     };
+    document.getElementById('btn0').addEventListener('click', function () {
+        document.getElementById('t1').value = '';
+    });
     document.getElementById('btn').addEventListener('click', function () {
         var t1 = document.getElementById('t1').value;
         var t2 = document.getElementById('t2').value;
