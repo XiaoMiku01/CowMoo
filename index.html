@@ -17,7 +17,7 @@
         </h1>
         </p>
         <div>
-            <textarea id="t1" rows="10"></textarea>
+            <textarea id="t1" rows="10" placeholder="输入人话或者牛语言"></textarea>
         </div>
         <div>
             <button id="btn0">清空</button>
@@ -25,7 +25,7 @@
             <button id="btn2">复制结果</button>
         </div>
         <div>
-            <textarea id="t2" rows="10"></textarea>
+            <textarea id="t2" rows="10" disabled="true" placeholder="牛语言翻译结果"></textarea>
         </div>
     </div>
 </body>
@@ -136,7 +136,7 @@
     };
     document.getElementById('btn0').addEventListener('click', function () {
         document.getElementById('t1').value = '';
-        document.getElementById('t1').value = '';
+        document.getElementById('t2').value = '';
     });
     document.getElementById('btn').addEventListener('click', function () {
         var t1 = document.getElementById('t1').value;
