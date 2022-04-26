@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牛牛翻译</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+</head>
+
+<body>
+    <div align="center">
+        <p class="navbar-text navbar-right">
+        <h1>
+            <span>🐮</span>牛牛翻译
+        </h1>
+        </p>
+        <div>
+            <textarea id="t1" rows="10"></textarea>
+        </div>
+        <div>
+            <button id="btn">翻译</button>
+            <button id="btn2">复制结果</button>
+        </div>
+        <div>
+            <textarea id="t2" rows="10"></textarea>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var b64 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/=';
+    var codes = ['\u200b', '\u200c\u200d'];
+    var table = [];
+    var makeTable = function () {
+        var sep = codes[0], chars = codes[1];
+        var char_count = b64.length;
+        var code_len = chars.length;
+        while (table.length < char_count) {
+            var table_len = table.length;
+            for (var i = 0; i < code_len; i++) {
+                var c = chars.charAt(i);
+                if (!table.includes(c)) {
+                    if (table.length >= char_count)
+                        break;
+                    table.push(c);
+                }
+                for (var j = 0; j < table_len; j++) {
+                    if (table.length >= char_count)
+                        break;
+                    var t = "".concat(c).concat(table[j]);
+                    if (!table.includes(t)) {
+                        table.push(t);
+                    }
+                }
+            }
+        }
+        for (var i = 0; i < table.length; i++) {
+            table[i] = sep + table[i];
+        }
+    };
+    makeTable();
+    var addPunctuations = function (t, options) {
+        var _a = options !== null && options !== void 0 ? options : {}, _b = _a.calls, calls = _b === void 0 ? '哞' : _b, _c = _a.halfwidthSymbol, halfwidthSymbol = _c === void 0 ? false : _c;
+        var a = t.split('');
+        var idx = 0;
+        while (idx < a.length) {
+            var c = a[idx].charCodeAt(0);
+            var delta = (c % 60) + 1;
+            idx += delta;
+            if (!a[idx]) {
+                break;
+            }
+            a[idx] += calls;
+            var mod = idx % 32;
+            switch (mod) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    a[idx] += halfwidthSymbol ? ',' : '，';
+                    break;
+                case 7:
+                    a[idx] += halfwidthSymbol ? '.' : '。';
+                    break;
+                case 8:
+                    a[idx] += halfwidthSymbol ? '?' : '？';
+                    break;
+                case 9:
+                    a[idx] += halfwidthSymbol ? '!' : '！';
+                    break;
+                case 10:
+                    a[idx] += halfwidthSymbol ? '~' : '～';
+                    break;
+            }
+        }
+        t = "".concat(calls).concat(a.join('')).concat(calls).concat(halfwidthSymbol ? '.' : '。');
+        return t;
+    };
+    /**
+     * Add Animal Calls
+     */
+    var addCalls = function (t, options) {
+        t = addPunctuations(t, options);
+        return t;
+    };
+    var human2miao = function (t, options) {
+        t = Base64.encode(t);
+        var len = t.length;
+        var arr = [];
+        for (var i = 0; i < len; i++) {
+            var c = t.charAt(i);
+            var n = b64.indexOf(c);
+            // console.log(c, n, table[n])
+            arr.push(table[n]);
+        }
+        var data = arr.join('');
+        return addCalls(data, options);
+    };
+    var clean = function (t) {
+        return t.replace(/[^\u200b\u200c\u200d]/ig, '');
+    };
+    var miao2human = function (t) {
+        t = clean(t);
+        for (var idx = table.length; idx >= 0; idx--) {
+            var reg = new RegExp(table[idx], 'ig');
+            t = t.replace(reg, b64.charAt(idx));
+        }
+        t = Base64.decode(t);
+        return t;
+    };
+    /**
+     * 判断一个字符串是否是喵语言
+     */
+    var isMiao = function (t) {
+        if (!t)
+            return false;
+        return clean(t).length > 0;
+    };
+    document.getElementById('btn').addEventListener('click', function () {
+        var t1 = document.getElementById('t1').value;
+        var t2 = document.getElementById('t2').value;
+        if (isMiao(t1)) {
+            t2 = miao2human(t1);
+        }
+        else {
+            t2 = human2miao(t1);
+        }
+        document.getElementById('t2').value = t2;
+    });
+    document.getElementById('btn2').addEventListener('click', function () {
+        var t2 = document.getElementById('t2').value;
+        navigator.clipboard.writeText(t2)
+    });
+</script>
+
+</html>
